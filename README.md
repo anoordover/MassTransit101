@@ -23,3 +23,24 @@ So I tried to reproduce the end-result of each session.
 We are at [project with ref to masstransit](https://youtu.be/dxHNAn69x6w?list=PLx8uyNNs1ri2MBx6BjPum5j9_MMdIfM9C&t=314)
 Available at tag Session1a in git.
 
+Proceed with:
+1. Add services.AddMassTransit in Startup;
+1. Add new classlib project for contracts in source folder `dotnet new classlib -n Sample.Contracts -f netstandard2.0`
+1. Add project to solution in `dotnet sln add Sample.Contracts`
+1. Add interface SubmitOrder
+1. Add reference to Contracts project from WebApi e.g. `dotnet add reference ../Sample.Contracts/`
+1. Add new classlib project for components named Sample.Components
+1. Add new project to solution
+1. Add reference to Sample.Contract in Sample.Components
+1. Add nuget package to Sample.Components `dotnet add package MassTransit`
+1. Add consumer of SubmitOrder named SubmitOrderConsumer
+1. Add reference to Sample.Components in Sample.Api
+1. During implementation of functionality a package is added to Sample.Api `dotnet add package MassTransit.Analyzers`
+this adds code completion help for objects passed to and from MassTransit
+1. Same package is added to Sample.Components
+1. Adding Mediator in the newest version has been changed, see Startup.cs
+1. Adding nswag.aspnetcore to Sample.Api
+
+We are at [First try with swagger](https://youtu.be/dxHNAn69x6w?list=PLx8uyNNs1ri2MBx6BjPum5j9_MMdIfM9C&t=1519)
+
+
