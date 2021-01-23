@@ -45,3 +45,5 @@ We are at [First try with swagger](https://youtu.be/dxHNAn69x6w?list=PLx8uyNNs1r
 
 1. fixing consumer;
 1. returning OrderSubmissionRejected
+
+Go to [Session 2](Session2.md)
