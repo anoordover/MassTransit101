@@ -20,7 +20,6 @@ namespace Sample.Service
             Host.CreateDefaultBuilder(args)
                 .ConfigureServices((hostContext, services) =>
                 {
-                    services.TryAddSingleton(KebabCaseEndpointNameFormatter.Instance);
                     services.AddMassTransit(cfg =>
                     {
                         cfg.AddConsumersFromNamespaceContaining<SubmitOrderConsumer>();
@@ -32,7 +31,7 @@ namespace Sample.Service
         private static void ConfigureBus(IBusRegistrationContext context,
             IRabbitMqBusFactoryConfigurator configurator)
         {
-            configurator.ConfigureEndpoints(context);
+            configurator.ConfigureEndpoints(context, KebabCaseEndpointNameFormatter.Instance);
         }
     }
 }
