@@ -1,8 +1,10 @@
 using MassTransit;
+using MassTransit.Definition;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Sample.Components.Consumers;
 using Sample.Contracts;
@@ -21,11 +23,13 @@ namespace Sample.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMediator(cfg =>
+            services.TryAddSingleton(KebabCaseEndpointNameFormatter.Instance);
+            services.AddMassTransit(cfg =>
             {
-                cfg.AddConsumer<SubmitOrderConsumer>();
+                cfg.UsingRabbitMq();
                 cfg.AddRequestClient<SubmitOrder>();
             });
+            services.AddMassTransitHostedService();
             services.AddOpenApiDocument(cfg =>
                 cfg.PostProcess = d => d.Info.Title = "Sample API Site");
             services.AddControllers();
