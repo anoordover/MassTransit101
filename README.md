@@ -43,4 +43,5 @@ this adds code completion help for objects passed to and from MassTransit
 
 We are at [First try with swagger](https://youtu.be/dxHNAn69x6w?list=PLx8uyNNs1ri2MBx6BjPum5j9_MMdIfM9C&t=1519)
 
-
+1. fixing consumer;
+1. returning OrderSubmissionRejected

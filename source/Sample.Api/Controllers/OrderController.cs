@@ -27,13 +27,23 @@ namespace Sample.Api.Controllers
         public async Task<IActionResult> Post(Guid id,
             string customerNumber)
         {
-            var response = await _submitOrderRequestClient.GetResponse<OrderSubmissionAccepted>(new
+            var (accepted, rejected) = await _submitOrderRequestClient.GetResponse<OrderSubmissionAccepted, OrderSubmissionRejected>(new
             {
                 OrderId = id,
                 InVar.Timestamp,
                 CustomerNumber = customerNumber
             });
-            return Ok(response.Message);
+
+            if (accepted.IsCompletedSuccessfully)
+            {
+                var response = await accepted;
+                return Accepted(response);
+            }
+            else
+            {
+                var response = await rejected;
+                return BadRequest(response.Message);
+            }
         }
     }
 }
