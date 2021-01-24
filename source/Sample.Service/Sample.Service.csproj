@@ -1,20 +1,17 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Worker">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UserSecretsId>dotnet-Sample.Service-C6ADB8B0-76DC-49A4-8F1A-BE4C2DF7FC97</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MassTransit.Analyzers" Version="7.1.3" />
     <PackageReference Include="MassTransit.AspNetCore" Version="7.1.3" />
     <PackageReference Include="MassTransit.RabbitMQ" Version="7.1.3" />
-    <PackageReference Include="NSwag.AspNetCore" Version="13.10.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.10" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Sample.Contracts\Sample.Contracts.csproj" />
     <ProjectReference Include="..\Sample.Components\Sample.Components.csproj" />
   </ItemGroup>
-
-
 </Project>
