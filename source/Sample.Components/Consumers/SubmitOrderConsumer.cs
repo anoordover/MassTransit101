@@ -31,6 +31,14 @@ namespace Sample.Components.Consumers
                 return;
             }
 
+            await context.Publish<OrderSubmitted>(
+                new
+                {
+                    context.Message.OrderId,
+                    context.Message.Timestamp,
+                    context.Message.CustomerNumber
+                });
+            
             if (context.RequestId != null)
                 await context.RespondAsync<OrderSubmissionAccepted>(new
                 {
