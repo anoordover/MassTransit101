@@ -1,10 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using MassTransit;
-using MassTransit.Definition;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Sample.Components.Consumers;
 using Sample.Contracts;
 
 namespace Sample.Api.Controllers
@@ -15,17 +13,40 @@ namespace Sample.Api.Controllers
     {
         private readonly ILogger<OrderController> _logger;
         private readonly IRequestClient<SubmitOrder> _submitOrderRequestClient;
+        private readonly IRequestClient<CheckOrder> _checkOrderClient;
         private readonly ISendEndpointProvider _sendEndpointProvider;
 
         public OrderController(ILogger<OrderController> logger, 
             IRequestClient<SubmitOrder> submitOrderRequestClient,
-            ISendEndpointProvider sendEndpointProvider)
+            ISendEndpointProvider sendEndpointProvider,
+            IRequestClient<CheckOrder> checkOrderClient)
         {
             _logger = logger;
             _submitOrderRequestClient = submitOrderRequestClient;
             _sendEndpointProvider = sendEndpointProvider;
+            _checkOrderClient = checkOrderClient;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Get(Guid id)
+        {
+            var (status,notFound) = await _checkOrderClient.GetResponse<OrderStatus, OrderNotFound>(new
+            {
+                OrderId = id
+            });
+
+            if (status.IsCompletedSuccessfully)
+            {
+                var response = await status;
+                return Ok(response.Message);
+            }
+            else
+            {
+                var response = await notFound;
+                return NotFound(response.Message);
+            }
+        }
+        
         [HttpPost]
         public async Task<IActionResult> Post(Guid id,
             string customerNumber)

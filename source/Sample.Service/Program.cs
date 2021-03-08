@@ -1,11 +1,11 @@
 using MassTransit;
 using MassTransit.Definition;
 using MassTransit.RabbitMqTransport;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Configuration;
 using Sample.Components.Consumers;
+using Sample.Components.StateMachines;
 
 namespace Sample.Service
 {
@@ -20,10 +20,13 @@ namespace Sample.Service
             Host.CreateDefaultBuilder(args)
                 .ConfigureServices((hostContext, services) =>
                 {
+                    services.TryAddSingleton(KebabCaseEndpointNameFormatter.Instance);
                     services.AddMassTransit(cfg =>
                     {
                         cfg.AddConsumersFromNamespaceContaining<SubmitOrderConsumer>();
                         cfg.UsingRabbitMq(ConfigureBus);
+                        cfg.AddSagaStateMachine<OrderStateMachine, OrderState>()
+                            .RedisRepository();
                     });
                     services.AddMassTransitHostedService();
                 });

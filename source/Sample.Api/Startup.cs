@@ -1,3 +1,4 @@
+using System;
 using MassTransit;
 using MassTransit.Definition;
 using Microsoft.AspNetCore.Builder;
@@ -23,12 +24,21 @@ namespace Sample.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.TryAddSingleton(KebabCaseEndpointNameFormatter.Instance);
+            
             services.AddMassTransit(cfg =>
             {
-                cfg.UsingRabbitMq((context, configurator) => 
-                    configurator.ConfigureEndpoints(context, KebabCaseEndpointNameFormatter.Instance));
-                cfg.AddRequestClient<SubmitOrder>();
+                cfg.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.PurgeOnStartup = true;
+                    MessageDataDefaults.ExtraTimeToLive = TimeSpan.FromDays(1);
+                    MessageDataDefaults.Threshold = 2000;
+                });
+                cfg.AddRequestClient<SubmitOrder>(
+                    new Uri($"exchange:{KebabCaseEndpointNameFormatter.Instance.Consumer<SubmitOrderConsumer>()}"));
+                cfg.AddRequestClient<CheckOrder>();
             });
+            
             services.AddMassTransitHostedService();
             services.AddOpenApiDocument(cfg =>
                 cfg.PostProcess = d => d.Info.Title = "Sample API Site");
