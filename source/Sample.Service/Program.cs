@@ -25,7 +25,7 @@ namespace Sample.Service
                     {
                         cfg.AddConsumersFromNamespaceContaining<SubmitOrderConsumer>();
                         cfg.UsingRabbitMq(ConfigureBus);
-                        cfg.AddSagaStateMachine<OrderStateMachine, OrderState>()
+                        cfg.AddSagaStateMachine<OrderStateMachine, OrderState>(typeof(OrderStateMachineDefinition))
                             .RedisRepository();
                     });
                     services.AddMassTransitHostedService();
