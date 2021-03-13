@@ -26,7 +26,11 @@ namespace Sample.Service
                         cfg.AddConsumersFromNamespaceContaining<SubmitOrderConsumer>();
                         cfg.UsingRabbitMq(ConfigureBus);
                         cfg.AddSagaStateMachine<OrderStateMachine, OrderState>(typeof(OrderStateMachineDefinition))
-                            .RedisRepository();
+                            .MongoDbRepository(r =>
+                            {
+                                r.Connection = "mongodb://127.0.0.1";
+                                r.DatabaseName = "orderdb";
+                            });
                     });
                     services.AddMassTransitHostedService();
                 });

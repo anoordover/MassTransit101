@@ -1,6 +1,7 @@
 using System;
 using Automatonymous;
 using MassTransit;
+using Sample.Components.StateMachines.OrderStateMachineActivities;
 using Sample.Contracts;
 
 namespace Sample.Components.StateMachines
@@ -11,6 +12,9 @@ namespace Sample.Components.StateMachines
         public OrderStateMachine()
         {
             Event(() => OrderSubmitted,
+                x => x.CorrelateById(
+                    m => m.Message.OrderId));
+            Event(() => OrderAccepted,
                 x => x.CorrelateById(
                     m => m.Message.OrderId));
             Event(() => OrderStatusRequested,
@@ -26,6 +30,9 @@ namespace Sample.Components.StateMachines
                         }
                     }));
                 });
+            Event(() => AccountClosed,
+                x => x.CorrelateBy(
+                    (saga, context) => saga.CustomerNumber == context.Message.CustomerNumber));
             
             InstanceState(x => x.CurrentState);
             Initially(
@@ -38,7 +45,13 @@ namespace Sample.Components.StateMachines
                     })
                     .TransitionTo(Submitted));
             
-            During(Submitted, Ignore(OrderSubmitted));
+            During(Submitted, 
+                Ignore(OrderSubmitted),
+                When(AccountClosed)
+                    .TransitionTo(Canceled),
+                When(OrderAccepted)
+                    .Activity(x => x.OfType<AcceptOrderActivity>())
+                    .TransitionTo(Accepted));
             
             DuringAny(
                 When(OrderStatusRequested)
@@ -59,8 +72,12 @@ namespace Sample.Components.StateMachines
         }
 
         public State Submitted { get; private set; }
+        public State Canceled { get; private set; }
+        public State Accepted { get; private set; }
 
         public Event<OrderSubmitted> OrderSubmitted { get; private set; }
+        public Event<OrderAccepted> OrderAccepted { get; private set; }
         public Event<CheckOrder> OrderStatusRequested { get; private set; }
+        public Event<CustomerAccountClosed> AccountClosed { get; private set; }
     }
 }

@@ -1,18 +1,15 @@
 version: "3"
 services:
   rabbitmq:
-    build:
-      context: ./RabbitMQ
-      dockerfile: Dockerfile
     container_name: dev-rabbitmq
     hostname: rabbit
     image: my-rabbitmq
     ports:
       - "5672:5672" # rabbitmq port
       - "15672:15672" # management port
-  my-redis:
-    container_name: dev-redis
-    hostname: redit
-    image: redis
+  mongodb:
+    container_name: dev-mongodb
+    hostname: mongodb
+    image: mongo
     ports:
-      - "6379:6379"
+      - "27017:27017"
